@@ -5,7 +5,8 @@ WIDTH = 800
 HEIGHT = 600
 
 PLAYER_SPEED = 5
-countdown = 1
+
+countdown = 10
 score = 0
 
 player = Actor('alien')
@@ -44,12 +45,15 @@ def draw():
     player.draw()
     pizza.draw()
 
-    screen.draw.text(str(score), (5,5))
-    screen.draw.text('{0:.2f}'.format(countdown), (5,25))
+    screen.draw.text("Pizza Hunt", midtop=(WIDTH/2,10), align="Center", fontsize=60, color="Red" )
+
+    screen.draw.text(str(score), (5,5), fontsize=50)
+    screen.draw.text('{0:.2f}'.format(countdown), topright=(WIDTH-5, 5), fontsize=50)
 
     if countdown == 0:
-        screen.draw.text("Game Over", (WIDTH/2, HEIGHT/2), align="Center", fontsize=160, color="Orange" )
-
+        screen.draw.text("Game Over", midtop=(WIDTH/2,100), align="Center", fontsize=160, color="Orange" )
+        screen.draw.text("Score " + str(score), midtop=(WIDTH/2,220), align="Center", fontsize=50, color="Yellow" )
+    
 def eat_pizza():
     global score
     print("Nom Nom Nom")
