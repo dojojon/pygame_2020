@@ -7,6 +7,7 @@ HEIGHT = 400
 PLAYER_SPEED = 5
 BURGER_MAX_SPEED = 3
 juice = 100
+score = 0
 
 player = Actor('lemon')
 player.pos = (WIDTH/2, HEIGHT/2)
@@ -25,10 +26,12 @@ for n in range(20):
     makeBurger()
 
 def update(dt):
-    global juice
+    global juice, score
 
     if juice > 0:
             
+        score += 1
+    
         update_player()
 
         for burger in burgers:
@@ -85,5 +88,6 @@ def draw():
 
     if juice == 0:
         screen.draw.text("Game Over", midtop=(WIDTH/2,100), align="Center", fontsize=160, color="Red" )
+        screen.draw.text("Score: {0:0}".format(score), midtop=(WIDTH/2,200), align="Center", fontsize=60, color="Cyan" )
        
 pgzrun.go()
