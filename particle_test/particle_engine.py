@@ -35,14 +35,13 @@ class ParticleEngine():
 
     _particles = []
 
-    def __init__(self, maxParticles):
-        self.maxParticles = maxParticles
-        for n in range(0, self.maxParticles):
-            particle = Particle(100, 100, randomRange(20, 51), randomRange(20, 51), 5, randomRange(2, 5))
-            self._particles.append(particle)
+    def __init__(self):
+        pass
 
     def emit(self, count, x, y):
-        pass
+        for n in range(0, count):
+            particle = Particle(x, y, randomRange(20, 51), randomRange(20, 51), 5, randomRange(2, 5))
+            self._particles.append(particle)
 
     def update(self, dt):
         for particle in self._particles:
