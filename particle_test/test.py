@@ -22,7 +22,7 @@ def on_key_down(key):
         s = 100
         x = randint(s, WIDTH - (2 * s))
         y = randint(s, HEIGHT - (2 * s))
-        pe.emit(x, y, 50, colors)
+        pe.emit((x, y), 2, 25, colors, emit_duration=10, duration=10)
 
 
 def draw():
