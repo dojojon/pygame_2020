@@ -1,6 +1,7 @@
 import pgzrun
 from random import randint
 from particle_engine import ParticleEngine
+from particle_engine import color_sets
 
 WIDTH = 800
 HEIGHT = 600
@@ -9,22 +10,21 @@ pe = ParticleEngine()
 
 
 def update(dt):
-
+    juice()
     pe.update(dt)
     pass
 
-
-colors = [(123, 123, 0), (0, 123, 23), (0, 30, 90)]
-
-
 def on_key_down(key):
     if key == keys.SPACE:
-        s = 100
-        x = randint(s, WIDTH - (2 * s))
-        y = randint(s, HEIGHT - (2 * s))
-        pe.emit((x, y), 2, 25, colors, emit_duration=10, duration=10)
+        juice()
 
+def juice():
+    s = 100
+    x = randint(s, WIDTH - s)
+    y = randint(s, HEIGHT - s)
+    pe.emit((x, y),colors=color_sets["juice"])
 
+  
 def draw():
 
     screen.clear()

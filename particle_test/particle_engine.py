@@ -12,10 +12,31 @@ color_sets = {
     "blue": [
         (0, 0, 255)
     ],
+    "rgb": [
+        (255, 0, 0),
+        (0, 255, 0),
+        (0, 0, 255)
+    ],
     "christmas": [
         (0, 255, 0),
         (255, 0, 0)
+    ],
+    "juice":[
+        (255, 244, 79),
+        (255, 255, 255),
+        (50, 205, 50)
     ]
+}
+
+effects = {
+
+    "juice": {
+        "size": 2,
+        "volume": 2,
+        "colors": color_sets["juice"],
+        "emit_duration": 1.5,
+        "duration": 0.75
+    }
 }
 
 
@@ -33,35 +54,34 @@ def randomColor(colors):
 
 class Emitter():
 
-    def __init__(self, position, vx, vy, size, volume, emit_duration, duration, colors=color_sets["red"]):
-        self._duration = duration
-
-        self._position = position
-        self._vx = vx
-        self._vy = vy
-        self._size = size
-        self._volume = volume
-        self._emit_duration = emit_duration
-        self._duration = duration
-        self._colors = colors
+    def __init__(self, position, config):
+        self.position = config["position"]
+        self.vx = config["vx"]
+        self.vy = config["vy"]
+        self.size = config["size"]
+        self.volume = config["volume"]
+        self.emit_duration = config["emit_duration"]
+        self.duration = config["duration"]
+        self.colors = config["colors"]
 
     def emit(self, dt):
         emitted = []
-        # self._emit_duration += -dt
-        for n in range(0, self._volume):
-            color = randomColor(self._colors)
-            vx = randomRange(int(self._vx[0]), int(self._vx[1]))
-            vy = randomRange(int(self._vy[0]), int(self._vy[1]))
-            x = self._position[0]
-            y = self._position[1]
-            particle = Particle(x, y, vx, vy, self._size, self._duration, color)
+        self.emit_duration += -dt
+        for n in range(0, self.volume):
+            color = randomColor(self.colors)
+            vx = randomRange(int(self.vx[0]), int(self.vx[1]))
+            vy = randomRange(int(self.vy[0]), int(self.vy[1]))
+            x = self.position[0]
+            y = self.position[1]
+            particle = Particle(x, y, vx, vy, self.size, self.duration, color)
 
             emitted.append(particle)
 
         return emitted
 
     def alive(self):
-        return False  #` self._emit_duration > 0
+        return self.emit_duration > 0
+
 
 class Particle():
 
@@ -95,6 +115,7 @@ class Particle():
     def alive(self):
         return self._life > 0
 
+
 class ParticleEngine():
 
     _emitters = []
@@ -103,10 +124,53 @@ class ParticleEngine():
     def __init__(self):
         pass
 
-    def emit(self, position, size=2, volume=20, colors=color_sets["red"], emit_duration=-1, duration=1):
-        emitter = Emitter(position, (-20, 20), (-20, 20), size, volume, emit_duration, duration, colors)
+    def emit(self, position, config=None, vx=(-20, 20), vy=(-20,20), size=None, volume=None, colors=color_sets["red"], emit_duration=None, duration=None):
+      
+        em_config = {
+            "position":position, 
+            }
+
+        if config is not None:
+            em_config = {** config}
+
+        if size is not None:
+            em_config["size"] = size
+        else:
+            em_config["size"] = 2
+
+        if volume is not None:
+            em_config["volume"] = volume
+        else:
+            em_config["volume"] = 5
+
+        if colors is not None:
+            em_config["colors"] = colors
+        else:
+            em_config["colors"] = color_sets["rgb"]
+
+        if emit_duration is not None:
+            em_config["emit_duration"] = emit_duration
+        else:
+            em_config["emit_duration"] = -1
+
+        if duration is not None:
+            em_config["duration"] = duration
+        else:
+            em_config["duration"] = 3
+
+        if vx is not None:
+            em_config["vx"] = vx
+        else:
+            em_config["vx"] = (-25, 25)
+            
+        if vy is not None:
+            em_config["vy"] = vy
+        else:
+            em_config["vy"] = (-25, 25)
+
+        emitter = Emitter(position, em_config)
         self._emitters.append(emitter)
-        pass
+        return emitter
 
     def update(self, dt):
 
