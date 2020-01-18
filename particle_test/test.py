@@ -16,7 +16,7 @@ def update(dt):
 
 def on_key_down(key):
     if key == keys.SPACE:
-        juice()
+        boom()
 
 def juice():
     s = 100
@@ -24,6 +24,10 @@ def juice():
     y = randint(s, HEIGHT - s)
     pe.emit((x, y),colors=color_sets["juice"])
 
+def boom():
+    x =  WIDTH / 2
+    y = HEIGHT / 2
+    pe.emit((x, y),colors=color_sets["fire"], emit_duration=2, volume=100, duration=0.75)
   
 def draw():
 
