@@ -1,13 +1,12 @@
 import pgzrun
 from random import randint
 from particle_engine import ParticleEngine
-from particle_engine import color_sets
+from particle_engine import color_sets, effects
 
 WIDTH = 800
 HEIGHT = 600
 
 pe = ParticleEngine()
-
 
 def update(dt):
     juice()
@@ -17,17 +16,18 @@ def update(dt):
 def on_key_down(key):
     if key == keys.SPACE:
         boom()
+        juice()
 
 def juice():
     s = 100
     x = randint(s, WIDTH - s)
     y = randint(s, HEIGHT - s)
-    pe.emit((x, y),colors=color_sets["juice"])
+    pe.emit((x, y), config=effects["juice"], emit_duration=.25)
 
 def boom():
     x =  WIDTH / 2
     y = HEIGHT / 2
-    pe.emit((x, y),colors=color_sets["fire"], emit_duration=2, volume=100, duration=0.75)
+    pe.emit((x, y), config=effects["shockWave"])
   
 def draw():
 

@@ -21,10 +21,15 @@ color_sets = {
         (0, 255, 0),
         (255, 0, 0)
     ],
-    "juice":[
+    "juice": [
         (255, 244, 79),
         (255, 255, 255),
         (50, 205, 50)
+    ],
+    "fire": [
+        (255, 0, 0),
+        (255, 165, 0),
+        (250, 205, 0)
     ]
 }
 
@@ -33,12 +38,30 @@ effects = {
     "juice": {
         "size": 2,
         "volume": 2,
+        "vx": (-20, 20),
+        "vy": (-20, 20),
         "colors": color_sets["juice"],
-        "emit_duration": 1.5,
-        "duration": 0.75
+        "emit_duration": .5,
+        "duration": 0.75,
+    },
+    "shockWave": {
+        "colors": color_sets["fire"],
+        "emit_duration": .125,
+        "volume": 100,
+        "size": 2,
+        "duration": .75,
+        "vx": (-80, 80),
+        "vy": (-80, 80),
+        "vMax": 60,
+        "vMin": 30
     }
 }
 
+def valueOrDefault(key, dictionay, default):
+    if key in dictionay:
+        return dictionay[key]
+    else:
+        return default
 
 def randomRange(min, max):
     value = random()
@@ -55,14 +78,17 @@ def randomColor(colors):
 class Emitter():
 
     def __init__(self, position, config):
-        self.position = config["position"]
-        self.vx = config["vx"]
-        self.vy = config["vy"]
-        self.size = config["size"]
-        self.volume = config["volume"]
-        self.emit_duration = config["emit_duration"]
-        self.duration = config["duration"]
-        self.colors = config["colors"]
+        self.position = position
+
+        self.vx = valueOrDefault("vx", config, (-20, 20))
+        self.vy = valueOrDefault("vy", config, (-20, 20))
+        self.vMin = valueOrDefault("vMin", config, -1)
+        self.vMax = valueOrDefault("vMax", config, 9999)
+        self.size = valueOrDefault("size", config, 3)
+        self.volume = valueOrDefault("volume", config, 10)
+        self.emit_duration = valueOrDefault("emit_duration", config, -1)
+        self.duration = valueOrDefault("duration", config, 3)
+        self.colors = valueOrDefault("colors", config,color_sets["rgb"])
 
     def emit(self, dt):
         emitted = []
@@ -73,7 +99,8 @@ class Emitter():
             vy = randomRange(int(self.vy[0]), int(self.vy[1]))
             x = self.position[0]
             y = self.position[1]
-            particle = Particle(x, y, vx, vy, self.size, self.duration, color)
+            particle = Particle(x, y, vx, vy, self.vMin,
+                                self.vMax, self.size, self.duration, color)
 
             emitted.append(particle)
 
@@ -85,7 +112,7 @@ class Emitter():
 
 class Particle():
 
-    def __init__(self, x, y, vx, vy, size=2, duration=5, color=(255, 255, 255)):
+    def __init__(self, x, y, vx, vy, vMin=None, vMax=None, size=2, duration=5, color=(255, 255, 255)):
         self._duration = duration
         self._life = duration
         self._x = x
@@ -94,9 +121,11 @@ class Particle():
         self._vx = vx
         self._vy = vy
         self._baseColor = color
+        self._vMin = vMin
+        self._vMax = vMax
 
     def update(self, dt):
-        if self._life > 0:
+        if self.alive():
             self._life -= dt
             # alpha = 255 * (self._life / self._duration)
             self._color = self._baseColor
@@ -107,13 +136,19 @@ class Particle():
         pass
 
     def draw(self, screen):
-        if self._life > 0:
-            # print("vx {0}".format(self._vx))
-            # print("x {0}".format(self._rect.x))
+        if self.alive():
             screen.draw.filled_rect(self._rect, self._baseColor)
 
     def alive(self):
-        return self._life > 0
+        velocityCull = False
+        if self._vMin is not None or self._vMin is not None:
+            velocity = (self._vx**2 + self._vy**2)**0.5
+            if self._vMin is not None and self._vMin > velocity:
+                velocityCull = True
+            elif self._vMax is not None and self._vMax < velocity:
+                velocityCull = True
+
+        return velocityCull is False and self._life > 0
 
 
 class ParticleEngine():
@@ -124,49 +159,41 @@ class ParticleEngine():
     def __init__(self):
         pass
 
-    def emit(self, position, config=None, vx=(-20, 20), vy=(-20,20), size=None, volume=None, colors=color_sets["red"], emit_duration=None, duration=None):
-      
+    def emit(self, position, config=None, vx=None, vy=None, vMin=None, vMax=None, size=None, volume=None, colors=None, emit_duration=None, duration=None):
+
         em_config = {
-            "position":position, 
-            }
+            "position": position,
+        }
 
         if config is not None:
-            em_config = {** config}
+            em_config = {**config}
 
         if size is not None:
             em_config["size"] = size
-        else:
-            em_config["size"] = 2
 
         if volume is not None:
             em_config["volume"] = volume
-        else:
-            em_config["volume"] = 5
 
         if colors is not None:
             em_config["colors"] = colors
-        else:
-            em_config["colors"] = color_sets["rgb"]
 
         if emit_duration is not None:
             em_config["emit_duration"] = emit_duration
-        else:
-            em_config["emit_duration"] = -1
 
         if duration is not None:
             em_config["duration"] = duration
-        else:
-            em_config["duration"] = 3
 
         if vx is not None:
             em_config["vx"] = vx
-        else:
-            em_config["vx"] = (-25, 25)
-            
+
         if vy is not None:
             em_config["vy"] = vy
-        else:
-            em_config["vy"] = (-25, 25)
+
+        if vMin is not None:
+            em_config["vMin"] = vMin
+
+        if vMax is not None:
+            em_config["vMax"] = vMax
 
         emitter = Emitter(position, em_config)
         self._emitters.append(emitter)
