@@ -1,16 +1,19 @@
 import pgzrun
 from random import randint
+from common.particle_engine import ParticleEngine, color_sets, effects
 
 WIDTH = 600
 HEIGHT = 400
 
 PLAYER_SPEED = 5
-BURGER_MAX_SPEED = 3
+BURGER_MAX_SPEED = 2
 juice = 100
 score = 0
 
 player = Actor('lemon')
 player.pos = (WIDTH/2, HEIGHT/2)
+
+pe = ParticleEngine()
 
 def makeBurger():
     global burgers
@@ -27,6 +30,8 @@ for n in range(20):
 
 def update(dt):
     global juice, score
+    
+    pe.update(dt)
 
     if juice > 0:
             
@@ -46,6 +51,7 @@ def update(dt):
                 burger.vy = -burger.vy
 
             if burger.colliderect(player):
+                pe.emit((player.x, player.y), config=effects["juice"],emit_duration=-1)
                 juice -= 1
 
     else:
@@ -89,5 +95,7 @@ def draw():
     if juice == 0:
         screen.draw.text("Game Over", midtop=(WIDTH/2,100), align="Center", fontsize=160, color="Red" )
         screen.draw.text("Score: {0:0}".format(score), midtop=(WIDTH/2,200), align="Center", fontsize=60, color="Cyan" )
-       
+
+    pe.draw(screen)
+
 pgzrun.go()
