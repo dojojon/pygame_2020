@@ -9,6 +9,5 @@ function copy_common(){
     echo ''
 }
 
-
 copy_common lemon_leak
 copy_common galga

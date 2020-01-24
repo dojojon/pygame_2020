@@ -5,9 +5,9 @@ from common.particle_engine import ParticleEngine, effects
 
 WIDTH=800
 HEIGHT=600
-PLAYER_SPEED = 5
-LASER_SPEED = 8
-TIE_SPEED_RANGE = (5, 8)
+PLAYER_SPEED = 200
+LASER_SPEED = 250
+TIE_SPEED_RANGE = (200, 500)
 
 clock = pygame.time.Clock()
 
@@ -38,12 +38,10 @@ def update(dt):
     update_player(dt)
 
     for laser in lasers:
-        laser.right += LASER_SPEED
-
-    lasers =[x for x in lasers if laser.left < WIDTH]
+        laser.right += LASER_SPEED  * dt
         
     for tie in fighters:
-        tie.right -= tie.speed
+        tie.right -= tie.speed  * dt
 
         if tie.right < 0:
             
@@ -54,7 +52,12 @@ def update(dt):
             for laser in lasers:
                 if laser.colliderect(tie):
                     pe.emit((laser.x, laser.y), config=effects["shockWave"], volume=10, emit_duration=0.124)
+                    laser.alive = False
+                    print("laser alive {0}".format( laser.alive))
                     reset_tie(tie)
+    
+    lasers =[x for x in lasers if (laser.left < WIDTH and laser.alive == True)]
+    
     pass
 
 def reset_tie(tie):
@@ -68,18 +71,19 @@ def update_player(dt):
     global lasers
 
     if keyboard.up:
-        player.top -= PLAYER_SPEED
+        player.top -= PLAYER_SPEED * dt
     if keyboard.down:
-        player.top += PLAYER_SPEED
+        player.top += PLAYER_SPEED  * dt
     if keyboard.left:
-        player.left -= PLAYER_SPEED
+        player.left -= PLAYER_SPEED  * dt
     if keyboard.right:
-        player.left += PLAYER_SPEED
+        player.left += PLAYER_SPEED  * dt
 
-    if keyboard.space and len(lasers) < 10:
+    if keyboard.space and len(lasers) < 1:
         laser = Actor('laser')
         laser.left = player.right
         laser.top = player.top
+        laser.alive = True
         lasers.append(laser)
 
 def draw():
