@@ -9,13 +9,13 @@ PLAYER_SPEED = 200
 LASER_SPEED = 250
 TIE_SPEED_RANGE = (200, 500)
 
-clock = pygame.time.Clock()
-
 pe = ParticleEngine()
 
 player = Actor('falcon')
 player.x = WIDTH/2
 player.y = HEIGHT/2
+
+lives = 3
 
 lasers = []
 fighters = []
@@ -31,34 +31,17 @@ for _ in range(0, 10):
     fighters.append(tie)
 
 def update(dt):
-    global lasers
+    global lasers, lives
 
     pe.update(dt)
 
-    update_player(dt)
+    if lives > 0:
+        update_player(dt)
 
-    for laser in lasers:
-        laser.right += LASER_SPEED  * dt
-        
-    for tie in fighters:
-        tie.right -= tie.speed  * dt
-
-        if tie.right < 0:
-            
-            reset_tie(tie)
-        
-        else:
-
-            for laser in lasers:
-                if laser.colliderect(tie):
-                    pe.emit((laser.x, laser.y), config=effects["shockWave"], volume=10, emit_duration=0.124)
-                    laser.alive = False
-                    print("laser alive {0}".format( laser.alive))
-                    reset_tie(tie)
+        update_ties(dt)
     
-    lasers =[x for x in lasers if (laser.left < WIDTH and laser.alive == True)]
-    
-    pass
+        update_lasers(dt)
+
 
 def reset_tie(tie):
     x  = WIDTH + randrange(0, 100)
@@ -66,6 +49,39 @@ def reset_tie(tie):
     tie.left = x
     tie.top = y
     tie.alive = True
+
+
+def update_ties(dt):
+    global fighters, lives
+
+    for tie in fighters:
+
+        tie.right -= tie.speed  * dt
+
+        if tie.colliderect(player):
+            reset_tie(tie)
+            pe.emit((player.x, player.y), config=effects["shockWave"], volume=10, emit_duration=0.124)
+            lives -= 1            
+
+        if tie.right < 0:
+            reset_tie(tie)
+    
+        for laser in lasers:
+            if laser.colliderect(tie):
+                pe.emit((laser.x, laser.y), config=effects["shockWave"], volume=10, emit_duration=0.124)
+                laser.alive = False
+                reset_tie(tie)
+
+
+def update_lasers(dt):
+    global lasers
+
+    for laser in lasers:
+        laser.right += LASER_SPEED  * dt
+    
+    lasers =[x for x in lasers if (laser.left < WIDTH and laser.alive == True)]
+
+        
 
 def update_player(dt):
     global lasers
@@ -86,13 +102,13 @@ def update_player(dt):
         laser.alive = True
         lasers.append(laser)
 
+
 def draw():
     screen.fill((0, 10, 30))
     player.draw()
 
-    clock.tick()
-    screen.draw.text(str(clock.get_fps()), (20,20))
-
+    screen.draw.text("Lives: {0}".format(lives), (20, 20))
+    
     for laser in lasers:
         laser.draw()
     
@@ -100,6 +116,9 @@ def draw():
         tie.draw()
     
     pe.draw(screen)
+
+    if lives <= 0:
+        screen.draw.text("Game Over", center=(WIDTH/2, HEIGHT/2), color=(255,0,0), fontsize=180 )
 
 
 pgzrun.go()
