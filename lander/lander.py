@@ -102,6 +102,8 @@ def update_player(dt):
         player.vy += dt * THRUST * math.cos(rotate_rads)
         player.vx += dt * THRUST * math.sin(rotate_rads)
 
+        pe.emit(player.center, config=effects["jet"],   angle=player.angle)
+
     if keyboard.s:
         player.vx = 0
         player.vy = 0
@@ -111,6 +113,7 @@ def draw():
 
     screen.fill((0,0,0))
     
+    pe.draw(screen)
     player.draw()
 
     draw_map()
@@ -124,7 +127,6 @@ def draw():
         screen.draw.text("Good Landing", center=(WIDTH/2, 60 + HEIGHT/2), color=(0,255,0), fontsize=120 )
 
 
-    pe.draw(screen)
 
 def get_map_rects_around_point(point, cell_type=None):
 
