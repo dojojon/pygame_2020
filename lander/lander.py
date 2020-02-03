@@ -47,9 +47,31 @@ player.y = 32
 player.vy= 0
 player.vx= 0
 
-# player.x = WIDTH/2
-# player.y = HEIGHT/2
-# GRAVITY =0
+
+def get_map_rects_by_type(cell_type=None):
+
+    rects = []
+   
+    y=0
+    for row in MAP:
+        
+        x=0
+        for cell in row:
+
+            if cell == cell_type:
+                r = Rect(x, y, 32, 32)
+                rects.append(r)
+                
+            x+=32
+        y+=32
+
+    return rects
+
+
+landing_pad = get_map_rects_by_type(cell_type="2")
+
+rock_rects = get_map_rects_by_type(cell_type="1")
+
 
 def update(dt):
 
@@ -59,10 +81,13 @@ def update(dt):
         update_player(dt)
         check_player_map()
 
+
 def check_player_map():
     global game_over, good_landing
 
-    landing_pad = get_map_rects_around_point(player.center, cell_type="2")
+    # landing_pad = get_map_rects_around_point(player.center, cell_type="2")
+    # hit_rects = get_map_rects_around_point(player.center, cell_type="1")
+
     for rect in landing_pad:
         if player.colliderect(rect):
             game_over = True
@@ -71,14 +96,15 @@ def check_player_map():
             else:
                 explode_ship()
 
-    hit_rects = get_map_rects_around_point(player.center, cell_type="1")
-    for rect in hit_rects:
+    for rect in rock_rects:
         if player.colliderect(rect):
             game_over = True
             explode_ship()
 
+
 def explode_ship():
     pe.emit(player.center, config=effects["shockWave"], volume=9, emit_duration=1)
+
 
 def update_player(dt):
     player.vy  += GRAVITY * dt
@@ -125,7 +151,6 @@ def draw():
    
     if good_landing:
         screen.draw.text("Good Landing", center=(WIDTH/2, 60 + HEIGHT/2), color=(0,255,0), fontsize=120 )
-
 
 
 def get_map_rects_around_point(point, cell_type=None):
