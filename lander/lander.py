@@ -86,7 +86,7 @@ def update_player(dt):
     player.x += player.vx * dt
 
     if keyboard.a:
-        player.angle += dt * ROTATE_RATE
+        player.angle += dt * ROTATE_RATE    
 
     if keyboard.d:
         player.angle  -= dt * ROTATE_RATE
@@ -102,7 +102,7 @@ def update_player(dt):
         player.vy += dt * THRUST * math.cos(rotate_rads)
         player.vx += dt * THRUST * math.sin(rotate_rads)
 
-        pe.emit(player.center, config=effects["jet"],   angle=player.angle)
+        pe.emit(player.center, config=effects["jet"], colors=[ (230, 34, 25), (140, 160, 250), (140, 160, 250)], duration=.5, vMax=250, volume=2, angle=player.angle)
 
     if keyboard.s:
         player.vx = 0
