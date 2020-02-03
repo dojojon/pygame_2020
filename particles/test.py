@@ -5,11 +5,14 @@ from particle_engine import color_sets, effects
 
 WIDTH = 800
 HEIGHT = 600
+jet_angle = 0
 
 pe = ParticleEngine()
 
 def update(dt):
-    juice()
+    # juice()
+    jet()
+
     pe.update(dt)
     pass
 
@@ -17,6 +20,20 @@ def on_key_down(key):
     if key == keys.SPACE:
         boom()
         juice()
+    
+    if key == keys.J:
+        jet()
+
+def jet():
+    global jet_angle
+
+    jet_angle += 1
+    if jet_angle > 360:
+        jet_angle = 0
+
+    x = WIDTH  / 2
+    y = 200
+    pe.emit((x, y), config=effects["jet"], angle=jet_angle, angleSpread=20)
 
 def juice():
     s = 100

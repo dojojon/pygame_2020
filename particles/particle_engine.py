@@ -1,6 +1,7 @@
 from pygame import Rect
 from random import random
 from random import randint
+import math
 
 color_sets = {
     "red": [
@@ -11,6 +12,11 @@ color_sets = {
     ],
     "blue": [
         (0, 0, 255)
+    ],
+    "ice": [
+        (0, 0, 255),
+        (255, 255, 255),
+        (50, 50, 255)
     ],
     "rgb": [
         (255, 0, 0),
@@ -54,14 +60,26 @@ effects = {
         "vy": (-80, 80),
         "vMax": 60,
         "vMin": 30
+    },
+    "jet": {
+        "colors": color_sets["fire"],
+        "emit_duration": .025,
+        "volume": 2,
+        "size": 3,
+        "duration": .75,
+        "angle": 0,
+        "vMax": 100,
+        "vMin": 1
     }
 }
+
 
 def valueOrDefault(key, dictionay, default):
     if key in dictionay:
         return dictionay[key]
     else:
         return default
+
 
 def randomRange(min, max):
     value = random()
@@ -80,15 +98,29 @@ class Emitter():
     def __init__(self, position, config):
         self.position = position
 
-        self.vx = valueOrDefault("vx", config, (-20, 20))
-        self.vy = valueOrDefault("vy", config, (-20, 20))
         self.vMin = valueOrDefault("vMin", config, -1)
         self.vMax = valueOrDefault("vMax", config, 9999)
+
+        if config["angle"] is not None:
+            angle = config["angle"]
+            minAngle = angle - valueOrDefault("angleSpread",config, 45)
+            maxAngle = angle + valueOrDefault("angleSpread",config, 45)
+
+            self.vx = (math.sin(math.radians(minAngle)) * self.vMax,
+                               math.sin(math.radians(maxAngle)) * self.vMax)
+
+            self.vy =  (math.cos(math.radians(minAngle)) * self.vMax,
+                               math.cos(math.radians(maxAngle)) * self.vMax)
+        else:
+            self.vx = valueOrDefault("vx", config, (-20, 20))
+            self.vy = valueOrDefault("vy", config, (-20, 20))
+
+ 
         self.size = valueOrDefault("size", config, 3)
         self.volume = valueOrDefault("volume", config, 10)
         self.emit_duration = valueOrDefault("emit_duration", config, -1)
         self.duration = valueOrDefault("duration", config, 3)
-        self.colors = valueOrDefault("colors", config,color_sets["rgb"])
+        self.colors = valueOrDefault("colors", config, color_sets["rgb"])
 
     def emit(self, dt):
         emitted = []
@@ -159,7 +191,7 @@ class ParticleEngine():
     def __init__(self):
         pass
 
-    def emit(self, position, config=None, vx=None, vy=None, vMin=None, vMax=None, size=None, volume=None, colors=None, emit_duration=None, duration=None):
+    def emit(self, position, config=None, angle=None, angleSpread=None, vx=None, vy=None, vMin=None, vMax=None, size=None, volume=None, colors=None, emit_duration=None, duration=None):
 
         em_config = {
             "position": position,
@@ -194,6 +226,16 @@ class ParticleEngine():
 
         if vMax is not None:
             em_config["vMax"] = vMax
+
+        if angleSpread is not None:
+            em_config["angleSpread"] = angleSpread
+        else:
+            em_config["angleSpread"] = 10
+
+        if angle is not None:
+            em_config["angle"] = angle
+        else:
+            em_config["angle"] = None
 
         emitter = Emitter(position, em_config)
         self._emitters.append(emitter)
