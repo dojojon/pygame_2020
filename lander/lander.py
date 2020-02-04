@@ -109,7 +109,7 @@ def check_player_map():
 
 def explode_ship():
     pe.emit(player.center, config=effects["shockWave"], size=3, volume=9, emit_duration=1)
-
+    player.image = "landercrashed"
 
 def update_player(dt):
     player.vy  += GRAVITY * dt
@@ -204,7 +204,7 @@ def draw_map():
                 screen.blit("rock", (x,y))
             elif cell == "2":
                 r = Rect(x, y, 32, 32)
-                screen.draw.filled_rect(r, (200,40,53))
+                screen.blit("landingpad", (x,y))
 
             x+=32
         y+=32
