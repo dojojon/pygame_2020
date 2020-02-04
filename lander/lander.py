@@ -1,5 +1,6 @@
 import pgzrun
 import math
+import pygame
 from common.particle_engine import ParticleEngine, effects
 
 WIDTH=800
@@ -11,6 +12,8 @@ THRUST = -100
 
 game_over = False
 good_landing = False
+
+clock = pygame.time.Clock()
 
 pe = ParticleEngine()
 
@@ -75,6 +78,8 @@ rock_rects = get_map_rects_by_type(cell_type="1")
 
 def update(dt):
 
+    clock.tick()
+
     pe.update(dt)
 
     if not game_over:
@@ -103,7 +108,7 @@ def check_player_map():
 
 
 def explode_ship():
-    pe.emit(player.center, config=effects["shockWave"], volume=9, emit_duration=1)
+    pe.emit(player.center, config=effects["shockWave"], size=3, volume=9, emit_duration=1)
 
 
 def update_player(dt):
@@ -138,7 +143,7 @@ def update_player(dt):
 def draw():
 
     screen.fill((0,0,0))
-    
+    screen.draw.text(str(clock.get_fps()), (10,10))
     pe.draw(screen)
     player.draw()
 
@@ -195,7 +200,8 @@ def draw_map():
 
             if cell == "1":
                 r = Rect(x, y, 32, 32)
-                screen.draw.filled_rect(r, (99,79,53))
+                # screen.draw.filled_rect(r, (99,79,53))
+                screen.blit("rock", (x,y))
             elif cell == "2":
                 r = Rect(x, y, 32, 32)
                 screen.draw.filled_rect(r, (200,40,53))
