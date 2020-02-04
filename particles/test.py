@@ -10,11 +10,12 @@ jet_angle = 0
 pe = ParticleEngine()
 
 def update(dt):
-    # juice()
+    juice()
     jet()
+    smoke()
 
     pe.update(dt)
-    pass
+
 
 def on_key_down(key):
     if key == keys.SPACE:
@@ -23,6 +24,11 @@ def on_key_down(key):
     
     if key == keys.J:
         jet()
+
+
+def smoke():
+    pe.emit((120, HEIGHT- 180),config=effects["smoke"])
+
 
 def jet():
     global jet_angle
@@ -33,7 +39,8 @@ def jet():
 
     x = WIDTH  / 2
     y = 200
-    pe.emit((x, y), config=effects["jet"], angle=jet_angle, angleSpread=20)
+    pe.emit((x, y), config=effects["jet"], colors=color_sets["rgb"], angle=jet_angle, angleSpread=20)
+
 
 def juice():
     s = 100
@@ -41,11 +48,13 @@ def juice():
     y = randint(s, HEIGHT - s)
     pe.emit((x, y), config=effects["juice"], emit_duration=.25)
 
+
 def boom():
     x =  WIDTH / 2
     y = HEIGHT / 2
     pe.emit((x, y), config=effects["shockWave"])
-  
+
+
 def draw():
 
     screen.clear()

@@ -36,6 +36,11 @@ color_sets = {
         (255, 0, 0),
         (255, 165, 0),
         (250, 205, 0)
+    ],
+    "smoke":[
+        (150,140,180),
+        (180,160,160),
+        (130,120,160)
     ]
 }
 
@@ -68,8 +73,20 @@ effects = {
         "size": 3,
         "duration": .75,
         "angle": 0,
+        "angleSpread": 8,
         "vMax": 100,
-        "vMin": 1
+        "vMin": 90
+    },
+    "smoke": {
+        "colors": color_sets["smoke"],
+        "emit_duration": 0,
+        "volume": 1,
+        "size": 9,
+        "duration": 10,
+        "angle": 180,
+        "angleSpread": 30,
+        "vMax": 20,
+        "vMin": 15
     }
 }
 
@@ -101,16 +118,16 @@ class Emitter():
         self.vMin = valueOrDefault("vMin", config, -1)
         self.vMax = valueOrDefault("vMax", config, 9999)
 
-        if config["angle"] is not None:
+        if "angle" in config and  config["angle"] is not None:
             angle = config["angle"]
-            minAngle = angle - valueOrDefault("angleSpread",config, 45)
-            maxAngle = angle + valueOrDefault("angleSpread",config, 45)
+            minAngle = angle - valueOrDefault("angleSpread",config, 90)
+            maxAngle = angle + valueOrDefault("angleSpread",config, 90)
 
-            self.vx = (math.sin(math.radians(minAngle)) * self.vMax,
-                               math.sin(math.radians(maxAngle)) * self.vMax)
+            self.vx = (math.sin(math.radians(minAngle)) * randomRange(self.vMin,  self.vMax),
+                               math.sin(math.radians(maxAngle)) * randomRange(self.vMin,  self.vMax))
 
-            self.vy =  (math.cos(math.radians(minAngle)) * self.vMax,
-                               math.cos(math.radians(maxAngle)) * self.vMax)
+            self.vy =  (math.cos(math.radians(minAngle)) * randomRange(self.vMin,  self.vMax),
+                               math.cos(math.radians(maxAngle)) * randomRange(self.vMin,  self.vMax))
         else:
             self.vx = valueOrDefault("vx", config, (-20, 20))
             self.vy = valueOrDefault("vy", config, (-20, 20))
@@ -229,13 +246,9 @@ class ParticleEngine():
 
         if angleSpread is not None:
             em_config["angleSpread"] = angleSpread
-        else:
-            em_config["angleSpread"] = 10
 
         if angle is not None:
             em_config["angle"] = angle
-        else:
-            em_config["angle"] = None
 
         emitter = Emitter(position, em_config)
         self._emitters.append(emitter)

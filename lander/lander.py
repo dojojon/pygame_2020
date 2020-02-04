@@ -85,7 +85,7 @@ def update(dt):
     if not game_over:
         update_player(dt)
         check_player_map()
-
+ 
 
 def check_player_map():
     global game_over, good_landing
@@ -108,7 +108,8 @@ def check_player_map():
 
 
 def explode_ship():
-    pe.emit(player.center, config=effects["shockWave"], size=3, volume=9, emit_duration=1)
+    pe.emit(player.center, config=effects["shockWave"], size=5, volume=9, emit_duration=1)
+    pe.emit(player.center, config=effects["smoke"], emit_duration=20)
     angle = player.angle
     player.image = "landercrashed"
     player.angle = angle
