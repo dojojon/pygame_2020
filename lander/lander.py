@@ -109,7 +109,9 @@ def check_player_map():
 
 def explode_ship():
     pe.emit(player.center, config=effects["shockWave"], size=3, volume=9, emit_duration=1)
+    angle = player.angle
     player.image = "landercrashed"
+    player.angle = angle
 
 def update_player(dt):
     player.vy  += GRAVITY * dt
