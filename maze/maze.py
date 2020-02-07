@@ -11,18 +11,18 @@ MAP = [
 "w000000000000000000w",
 "w00wwwwwwwwwwwww000w",
 "w00w0000s0w0k00w000w",
-"w00w000000w0000w000w",
+"w00w000000w00m0w000w",
 
 "w000000000w00000000w",
 "w000000000w00000000w",
 "wdwwwwwwwwwwwwwwwwww",
 "w000000000000000000w",
-"w000000000000000000w",
+"w00000000000000m000w",
 
 "w000000000000000000w",
 "wwwwww000000000wwdww",
-"w0000wwwww00000w000w",
-"w00000000000000w000e",
+"wk000wwwww00000w000w",
+"w000000m0000000w000e",
 "wwwwwwwwwwwwwwwwwwww",
 
 ]
@@ -48,6 +48,7 @@ start = get_player_start()
 player = Actor("fred")
 player.position = start
 player.next_move_time = 0
+player.keys = 0
 
 def update(dt):
     global game_over
@@ -60,7 +61,7 @@ def update(dt):
 
     cell = get_cell_type(player.position)
     if cell == "k":
-        cell = 0
+        set_cell_type(player.position,0)
         player.keys += 1
 
 def update_player(dt):
@@ -85,14 +86,20 @@ def update_player(dt):
             player.position = (player.position[0] ,  player.position[1] + 1)
             player.next_move_time = 0.125
         
-    print("player {}".format(player.position))
+    print("player keys {}".format(player.keys))
     player.topleft = (player.position[0]* CELL_SIZE, player.position[1]* CELL_SIZE)
 
 
 def can_walk(direction):
-    no_walk = ["w"]
-    player_check_position = (player.position[0] + direction[0], player.position[1] + direction[1])
-    cell = get_cell_type(player_check_position)
+    no_walk = ["w", "d"]
+    check_position = (player.position[0] + direction[0], player.position[1] + direction[1])
+    cell = get_cell_type(check_position)
+
+    if cell == "d" and player.keys > 0:
+        set_cell_type(check_position, "0")
+        player.keys -= 1
+        cell = get_cell_type(check_position)
+
     return  cell not in no_walk
 
 
@@ -100,7 +107,13 @@ def get_cell_type(position):
     row = MAP[position[1]]
     cell = row[position[0]]
     return cell
-    
+
+def set_cell_type(position, cell_type):
+    global MAP
+    row = MAP[position[1]]
+    cells = list(row)
+    cells[position[0]] = str(cell_type)
+    MAP[position[1]] = ''.join(cells)
 
 def draw():
     screen.fill((50,50,50))
