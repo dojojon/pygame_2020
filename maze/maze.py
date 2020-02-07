@@ -58,6 +58,10 @@ def update(dt):
     if get_cell_type (player.position) == "e":
         game_over = True
 
+    cell = get_cell_type(player.position)
+    if cell == "k":
+        cell = 0
+        player.keys += 1
 
 def update_player(dt):
 
