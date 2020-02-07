@@ -28,6 +28,24 @@ MAP = [
 ]
 game_over = False
 
+def get_monsters():
+
+
+    result = []
+    y = 0
+    x = 0
+    for row in MAP:
+        x += 1
+        for cell in row:
+            if cell == "m":
+                monster = Actor('skelly')
+                monster.position = (x,y)
+                result.append(monster)
+
+        y += 1
+    return result
+
+
 def get_player_start():
 
     result = (0, 0)
@@ -50,8 +68,13 @@ player.position = start
 player.next_move_time = 0
 player.keys = 0
 
+monsters = get_monsters()
+
 def update(dt):
     global game_over
+
+    for monster in monsters:
+        monster.topleft = (monster.position[0] * CELL_SIZE, monster.position[1] * CELL_SIZE)
 
     if not game_over:
         update_player(dt)
@@ -119,6 +142,9 @@ def draw():
     screen.fill((50,50,50))
     draw_map()
     player.draw()
+
+    for monster in monsters:
+        monster.draw()
 
     if game_over:
         screen.draw.text("Game Over", center=(WIDTH/2, HEIGHT/2), color=(255,0,255), fontsize=100 )
