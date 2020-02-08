@@ -16,10 +16,10 @@ MAP = [
 "w000000000w00000000w",
 "w000000000w00000000w",
 "wdwwwwwwwwwwwwwwwwww",
-"w000000000000000000w",
-"w00000000000000m000w",
+"w000000000w00000000w",
+"w000000000w0000m000w",
 
-"w000000000000000000w",
+"w00000m000w00000000w",
 "wwwwww000000000wwdww",
 "wk000wwwww00000w000w",
 "w000000m0000000w000e",
@@ -33,14 +33,17 @@ def get_monsters():
 
     result = []
     y = 0
-    x = 0
     for row in MAP:
-        x += 1
+        x = 0
         for cell in row:
             if cell == "m":
                 monster = Actor('skelly')
                 monster.position = (x,y)
+                monster.direction = (1, 0)
+                monster.next_move_interval = .5
+                monster.next_move_time  = .5
                 result.append(monster)
+            x += 1
 
         y += 1
     return result
@@ -74,6 +77,15 @@ def update(dt):
     global game_over
 
     for monster in monsters:
+        monster.next_move_time -= dt
+        if monster.next_move_time < 0:
+            monster.next_move_time = monster.next_move_interval
+
+            if not can_walk(monster.position, monster.direction):
+                monster.direction = (monster.direction[0] * -1, monster.direction[1] * -1)
+
+            monster.position = (monster.position[0] + monster.direction[0], monster.position[1] + monster.direction[1])
+
         monster.topleft = (monster.position[0] * CELL_SIZE, monster.position[1] * CELL_SIZE)
 
     if not game_over:
@@ -93,19 +105,19 @@ def update_player(dt):
 
     if player.next_move_time < 0:
 
-        if keyboard.right and can_walk((1, 0)):
+        if keyboard.right and can_walk(player.position, (1, 0)):
             player.position = (player.position[0] + 1, player.position[1])
             player.next_move_time = 0.125
 
-        if keyboard.left and can_walk((-1, 0)):
+        if keyboard.left and can_walk(player.position, (-1, 0)):
             player.position = (player.position[0] - 1, player.position[1])
             player.next_move_time = 0.125
 
-        if keyboard.up and can_walk((0, -1)):
+        if keyboard.up and can_walk(player.position, (0, -1)):
             player.position = (player.position[0] ,  player.position[1] -1 )
             player.next_move_time = 0.125
 
-        if keyboard.down and can_walk((0, 1)):
+        if keyboard.down and can_walk(player.position, (0, 1)):
             player.position = (player.position[0] ,  player.position[1] + 1)
             player.next_move_time = 0.125
         
@@ -113,9 +125,9 @@ def update_player(dt):
     player.topleft = (player.position[0]* CELL_SIZE, player.position[1]* CELL_SIZE)
 
 
-def can_walk(direction):
+def can_walk(position, direction):
     no_walk = ["w", "d"]
-    check_position = (player.position[0] + direction[0], player.position[1] + direction[1])
+    check_position = (position[0] + direction[0], position[1] + direction[1])
     cell = get_cell_type(check_position)
 
     if cell == "d" and player.keys > 0:
@@ -148,8 +160,6 @@ def draw():
 
     if game_over:
         screen.draw.text("Game Over", center=(WIDTH/2, HEIGHT/2), color=(255,0,255), fontsize=100 )
-
-
 
 
 def draw_map():
