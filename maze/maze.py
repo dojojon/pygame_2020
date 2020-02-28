@@ -19,10 +19,10 @@ MAP = [
 "w000000000w00000000w",
 "w000000000w0000m000w",
 
-"w00000m000w00000000w",
-"wwwwww000000000wwdww",
-"wk000wwwww00000w000w",
-"w000000m0000000w000e",
+"w000w0m000w0m00w000w",
+"wwwwwww0000000wwwdww",
+"wk0000wwww0000w0000w",
+"w000000m00000w00000e",
 "wwwwwwwwwwwwwwwwwwww",
 
 ]
@@ -40,8 +40,8 @@ def get_monsters():
                 monster = Actor('skelly')
                 monster.position = (x,y)
                 monster.direction = (1, 0)
-                monster.next_move_interval = .5
-                monster.next_move_time  = .5
+                monster.next_move_interval = .25
+                monster.next_move_time  = .25
                 result.append(monster)
             x += 1
 
@@ -87,6 +87,11 @@ def update(dt):
             monster.position = (monster.position[0] + monster.direction[0], monster.position[1] + monster.direction[1])
 
         monster.topleft = (monster.position[0] * CELL_SIZE, monster.position[1] * CELL_SIZE)
+
+        if monster.colliderect(player):
+            game_over = True
+            player.image = "skelly"
+            
 
     if not game_over:
         update_player(dt)
