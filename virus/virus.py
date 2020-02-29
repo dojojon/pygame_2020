@@ -77,4 +77,3 @@ def draw():
         virus.draw()
 
     display_game_over()
-
