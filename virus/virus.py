@@ -1,9 +1,11 @@
+import pgzrun
+
 from random import randint
 
 WIDTH=800
 HEIGHT=640
 
-player=Actor("wizards/fred")
+player=Actor("fred")
 player.left = WIDTH/2
 player.top = 200
 game_over = False
@@ -11,7 +13,7 @@ game_over = False
 baddies = []
 
 for n in range(0, 10):
-    virus = Actor("wizards/virus")
+    virus = Actor("virus")
     virus.left = randint(60, WIDTH -60)
     virus.top = randint(60, HEIGHT -60)
 
@@ -77,3 +79,5 @@ def draw():
         virus.draw()
 
     display_game_over()
+
+pgzrun.go()
