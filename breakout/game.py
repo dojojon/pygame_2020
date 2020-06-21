@@ -96,6 +96,9 @@ def draw():
     for brick in bricks:
         brick.draw()
 
+    if lives < 1:
+        screen.draw.text("Game Over", center=(WIDTH/2, HEIGHT/2), color=(255,0,255), fontsize=180 )
+
 
 lives = 3
 score = 0
