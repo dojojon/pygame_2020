@@ -2,22 +2,14 @@ import pgzrun
 import pygame
 from random import randrange
 
-
 WIDTH=800
 HEIGHT=600
 
-lives = 3
-
-ball = Actor("breakout_ball")
-ball.x = 400
-ball.y = 400
-ball.vx = randrange(-20, 20)
-ball.vy = randrange(-20, -5)
-
-bat = Actor("breakout_bat")
-bat.top =HEIGHT - 32
-bat.left =(WIDTH - bat.width)/2
-bat.speed = 250
+def reset_ball():
+    ball.x = WIDTH /2
+    ball.y = HEIGHT * 0.75
+    ball.vx = randrange(-20, 20)
+    ball.vy = randrange(-20, -5)
 
 def update_ball(dt):
     global ball
@@ -68,5 +60,16 @@ def draw():
     bat.draw()
     ball.draw()
     pass
+
+
+lives = 3
+
+ball = Actor("breakout_ball")
+reset_ball()
+
+bat = Actor("breakout_bat")
+bat.top =HEIGHT - 32
+bat.left =(WIDTH - bat.width)/2
+bat.speed = 250
 
 pgzrun.go()
