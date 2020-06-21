@@ -28,7 +28,7 @@ def reset_ball():
     ball.vy = randrange(-20, -5)
 
 def update_ball(dt):
-    global ball
+    global lives
 
     ball.x += dt * ball.vx * 10
     ball.y += dt * ball.vy * 10
@@ -46,7 +46,8 @@ def update_ball(dt):
         ball.vy *= -1
 
     if ball.bottom > HEIGHT:
-        ball.vy *= -1
+        reset_ball()
+        lives -= 1
 
 def update_bat(dt):
 
@@ -66,10 +67,11 @@ def update_bat(dt):
         ball.bottom = bat.top -1
 
 def update_bricks(dt):
-    global bricks
+    global bricks, score
 
     for brick in bricks:
         if brick.colliderect(ball):
+            score += 1
             brick.alive = False
             if brick.collidepoint(ball.midtop) or brick.collidepoint(ball.midbottom):
                 ball.vy *= -1 
@@ -79,22 +81,24 @@ def update_bricks(dt):
     bricks = [brick for brick in bricks if brick.alive]
 
 def update(dt):
-    update_ball(dt)
-    update_bat(dt)
-    update_bricks(dt)
-    pass
+    if lives > 0:
+        update_ball(dt)
+        update_bat(dt)
+        update_bricks(dt)
 
 def draw():
     screen.fill((0, 10, 30))
-    screen.draw.text("Lives: {0}".format(lives), (20, 20))
+    screen.draw.text("Lives: {0}".format(lives), (10, 10))
+    screen.draw.text("Score: {0}".format(score), (WIDTH - 100, 10))
+    
     bat.draw()
     ball.draw()
     for brick in bricks:
         brick.draw()
-    pass
 
 
 lives = 3
+score = 0
 
 bricks = make_bricks()
 
