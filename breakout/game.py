@@ -25,7 +25,7 @@ def reset_ball():
     ball.x = bat.midtop[0]
     ball.y = HEIGHT - 32
     ball.vx = randrange(-20, 20)
-    ball.vy = randrange(-20, -5)
+    ball.vy = -20
 
 def update_ball(dt):
     global lives
@@ -63,7 +63,7 @@ def update_bat(dt):
 
     if ball.colliderect(bat):
         ball.vy *= -1
-        ball.vx += randrange(-5, 5)
+        ball.vx += (ball.midtop[0] - bat.midtop[0]) * 0.5
         ball.bottom = bat.top -1
 
 def update_bricks(dt):
