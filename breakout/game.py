@@ -17,7 +17,7 @@ ball.vy = randrange(-20, -5)
 bat = Actor("breakout_bat")
 bat.top =HEIGHT - 32
 bat.left =(WIDTH - bat.width)/2
-bat.speed = 200
+bat.speed = 250
 
 def update_ball(dt):
     global ball
@@ -51,6 +51,11 @@ def update_bat(dt):
         bat.left = 0
     if bat.right > WIDTH:
         bat.right = WIDTH
+
+    if ball.colliderect(bat):
+        ball.vy *= -1
+        ball.vx += randrange(-5, 5)
+        ball.bottom = bat.top -1
 
 def update(dt):
     update_ball(dt)
